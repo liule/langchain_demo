@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "uv: install dependencies",
+            "type": "shell",
+            "command": "uv",
+            "args": ["pip", "install", "-r", "requirements.txt"],
+            "group": "build"
+        },
+        {
+            "label": "uv: run tests",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "pytest"],
+            "group": "test"
+        },
+        {
+            "label": "uv: format code",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "ruff", "format", "."],
+            "group": "build"
+        }
+    ]
+}
