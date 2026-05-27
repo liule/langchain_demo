@@ -2,11 +2,11 @@ import os
 import requests
 from dotenv import load_dotenv
 
-from langchain.agents import initialize_agent
-from langchain_community.tools import DuckDuckGoSearchRun
+from langchain import hub
+from langchain.agents import AgentExecutor, create_react_agent
 from langchain.tools import tool
+from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_openai import ChatOpenAI
-
 
 load_dotenv()
 
@@ -40,7 +40,7 @@ def get_current_weather(location: str) -> str:
         return f"天气查询失败: {e}"
 
 
-def build_agent():
+def build_agent() -> AgentExecutor:
     api_key = os.getenv("MOONSHOT_API_KEY")
     if not api_key:
         raise ValueError("请先在环境变量中设置 MOONSHOT_API_KEY")
@@ -55,20 +55,19 @@ def build_agent():
         temperature=0,
     )
 
-    search_tool = DuckDuckGoSearchRun(name="search")
-    tools = [search_tool, get_current_weather]
+    tools = [DuckDuckGoSearchRun(name="search"), get_current_weather]
+    prompt = hub.pull("hwchase17/react")
+    agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
 
-    agent = initialize_agent(
+    return AgentExecutor(
+        agent=agent,
         tools=tools,
-        llm=llm,
-        agent="zero-shot-react-description",
         verbose=True,
         handle_parsing_errors=True,
     )
-    return agent
 
 
-def main():
+def main() -> None:
     agent = build_agent()
     print("Kimi + LangChain Agent 已启动。输入 'exit' 退出。")
 
@@ -78,8 +77,8 @@ def main():
             print("再见！")
             break
 
-        result = agent.run(query)
-        print(f"\nAgent: {result}")
+        result = agent.invoke({"input": query})
+        print(f"\nAgent: {result['output']}")
 
 
 if __name__ == "__main__":
