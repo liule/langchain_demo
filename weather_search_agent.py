@@ -2,8 +2,8 @@ import os
 import requests
 from dotenv import load_dotenv
 
-from langchain import hub
 from langchain.agents import AgentExecutor, create_react_agent
+from langchain.hub import pull
 from langchain.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_openai import ChatOpenAI
@@ -56,7 +56,7 @@ def build_agent() -> AgentExecutor:
     )
 
     tools = [DuckDuckGoSearchRun(name="search"), get_current_weather]
-    prompt = hub.pull("hwchase17/react")
+    prompt = pull("hwchase17/react")
     agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
 
     return AgentExecutor(
