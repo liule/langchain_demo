@@ -2,7 +2,7 @@ import os
 import requests
 from dotenv import load_dotenv
 
-from langchain.agents import AgentType, initialize_agent
+from langchain.agents import initialize_agent
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain.tools import tool
 from langchain_openai import ChatOpenAI
@@ -61,7 +61,7 @@ def build_agent():
     agent = initialize_agent(
         tools=tools,
         llm=llm,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        agent="zero-shot-react-description",
         verbose=True,
         handle_parsing_errors=True,
     )
